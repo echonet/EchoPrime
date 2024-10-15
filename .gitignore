@@ -1,6 +1,3 @@
-candidates_data/
-example_study/
-example_study.zip
-candidates_data.zip
+model_data/
 .ipynb_checkpoints/
 *.pyc

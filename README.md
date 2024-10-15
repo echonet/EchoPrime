@@ -9,11 +9,9 @@ This repository contains the official inference code for the following paper:
 
 ## How To Use
 1) Clone the repository
-2) Download candidates data `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/candidates_data.zip`
-3) Download an example echocardiogram study `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/example_study.zip`
-4) `unzip candidates_data.zip`
-5) `unzip example_study.zip`
-6) Follow EchoPrimeDemo.ipynb notebook
+2) Download model data
+3) `unzip model_data.zip`
+4) Follow EchoPrimeDemo.ipynb notebook
 
 ## Licence
 This project is licensed under the terms of the MIT license.
