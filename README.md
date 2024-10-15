@@ -6,6 +6,7 @@ This repository contains the official inference code for the following paper:
 *Milos Vukadinovic, Xiu Tang, Neal Yuan, Paul Cheng, Debiao Li, Susan Cheng, Bryan He, David Ouyang*  
 [Read the paper on arXiv](https://arxiv.org/abs/2410.09704)
 
+![EchoPrime Demo](demo_image.png)
 
 ## How To Use
 1) Clone the repository
