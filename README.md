@@ -9,7 +9,7 @@ This repository contains the official inference code for the following paper:
 
 ## How To Use
 1) Clone the repository
-2) Download model data
+2) Download model data `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
 3) `unzip model_data.zip`
 4) Follow EchoPrimeDemo.ipynb notebook
 
