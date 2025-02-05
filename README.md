@@ -11,8 +11,13 @@ This repository contains the official inference code for the following paper:
 
 ## How To Use
 1) Clone the repository and navigate to the EchoPrime directory
-2) Download model data `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
-3) `unzip model_data.zip`
+2) Download model data 
+    * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
+    * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/candidate_embeddings_p1.pt`
+    * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/candidate_embeddings_p2.pt`
+    * `unzip model_data.zip`
+    *  `mv candidate_embeddings_p1.pt model_data/candidates_data/`
+    *  `mv candidate_embeddings_p2.pt model_data/candidates_data/`
 4) Install `requirements.txt`
 5) Follow EchoPrimeDemo.ipynb notebook
 
