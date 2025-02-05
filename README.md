@@ -27,15 +27,9 @@ This project is licensed under the terms of the MIT license.
 
 ## FAQ:
 
-### After processing the images they appearg green-tinted.
+### After processing the images they appear green-tinted.
 Make sure that you have the correct libraries installed. Use requirements.txt to install the dependencies.
 
-
-### How to use the view classification model only?
-If you are only interested in the view classification task, take a look at the `ViewClassification.ipynb` notebook.
-
-### How to use EchoPrime to predict additional conditions (such as severity-based dilation, regurgitation...)?
-If you are only interested in using EchoPrime to predict additional conditions, take a look at the `ExtendedPrediction.ipynb` notebook.
 
 ## How to run the code in docker?
 
