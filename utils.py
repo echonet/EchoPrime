@@ -42,6 +42,7 @@ ALL_SECTIONS=["Left Ventricle",
 t_list = {k: [all_phrases[k][j] for j in all_phrases[k]] 
           for k in all_phrases}
 phrases_per_section_list={k:functools.reduce(lambda a,b: a+b, v) for (k,v) in t_list.items()}
+phrases_per_section_list_org={k:functools.reduce(lambda a,b: a+b, v) for (k,v) in t_list.items()}
 
 numerical_pattern = r'(\\d+(\\.\\d+)?)'  # Escaped backslashes for integers or floats
 string_pattern = r'\\b\\w+.*?(?=\\.)'
@@ -68,8 +69,31 @@ def extract_features(report: str) -> list:
     Returns a list of 21 different features
     see json_data for a list of features
     """
+    sorted_features=['impella',
+    'ejection_fraction',
+    'pacemaker',
+    'rv_systolic_function_depressed',
+    'right_ventricle_dilation',
+    'left_atrium_dilation',
+    'right_atrium_dilation',
+    'mitraclip',
+    'mitral_annular_calcification',
+    'mitral_stenosis',
+    'mitral_regurgitation',
+    'tavr',
+    'bicuspid_aov_morphology',
+    'aortic_stenosis',
+    'aortic_regurgitation',
+    'tricuspid_stenosis',
+    'tricuspid_valve_regurgitation',
+    'pericardial_effusion',
+    'aortic_root_dilation',
+    'dilated_ivc',
+    'pulmonary_artery_pressure_continuous']
+
+    sorted_json_data = {k:json_data[k] for k in sorted_features}
     features=[]
-    for key,value in json_data.items():
+    for key,value in sorted_json_data.items():
         if value['mode'] == "regression":
             match=None
             for phrase in value['label_sources']:
@@ -135,3 +159,29 @@ def structure_rep(rep):
     # Join structured report parts
     structured_report = ' '.join(structured_report)
     return structured_report
+
+
+
+def phrase_decode(phrase_ids):
+    report = ""
+    current_section = -1
+    for sec_idx, phrase_idx, value in phrase_ids:
+        section=list(phrases_per_section_list_org.keys())[sec_idx]
+        if sec_idx!=current_section:
+            if current_section!=-1:
+                report+="[SEP] "
+            report += section + ": "
+            current_section=sec_idx
+
+        # Get phrase template
+        phr = phrases_per_section_list_org[section][phrase_idx]
+
+        if '<numerical>' in phr:
+            phr = phr.replace('<numerical>',str(value))
+        elif '<string>' in phr:
+            phr = phr.replace('<string>',str(value))
+            
+        report += phr + " "
+    report += "[SEP]"
+    return report
+

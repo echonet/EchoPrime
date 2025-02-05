@@ -13,7 +13,33 @@ This repository contains the official inference code for the following paper:
 1) Clone the repository and navigate to the EchoPrime directory
 2) Download model data `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
 3) `unzip model_data.zip`
-4) Follow EchoPrimeDemo.ipynb notebook
+4) Install `requirements.txt`
+5) Follow EchoPrimeDemo.ipynb notebook
 
 ## Licence
 This project is licensed under the terms of the MIT license.
+
+
+## FAQ:
+
+### After processing the images they appearg green-tinted.
+Make sure that you have the correct libraries installed. Use requirements.txt to install the dependencies.
+
+
+### How to use the view classification model only?
+If you are only interested in the view classification task, take a look at the `ViewClassification.ipynb` notebook.
+
+### How to use EchoPrime to predict additional conditions (such as severity-based dilation, regurgitation...)?
+If you are only interested in using EchoPrime to predict additional conditions, take a look at the `ExtendedPrediction.ipynb` notebook.
+
+## How to run the code in docker?
+
+```
+docker build -t echo-prime .
+```
+
+```
+docker run -d --name echoprime-container --gpus all echo-prime tail -f /dev/null
+```
+Then you can attach to this container and run the notebook located at 
+`/workspace/EchoPrime/EchoPrimeDemo.ipynb`.
