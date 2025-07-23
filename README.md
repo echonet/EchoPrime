@@ -10,9 +10,7 @@ This repository contains the official inference code for the following paper:
 ![EchoPrime Demo](assets/demo_image.png)
 
 ## How To Use
-1) Clone the repository and navigate to the EchoPrime directory
-
-`git clone https://github.com/echonet/EchoPrime`
+1) Clone the repository and navigate to the EchoPrime directory `git clone https://github.com/echonet/EchoPrime`
 2) Download model data 
     * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
     * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/candidate_embeddings_p1.pt`
