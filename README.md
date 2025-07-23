@@ -11,6 +11,7 @@ This repository contains the official inference code for the following paper:
 
 ## How To Use
 1) Clone the repository and navigate to the EchoPrime directory
+
 `git clone https://github.com/echonet/EchoPrime`
 2) Download model data 
     * `wget https://github.com/echonet/EchoPrime/releases/download/v1.0.0/model_data.zip`
@@ -19,15 +20,15 @@ This repository contains the official inference code for the following paper:
     * `unzip model_data.zip`
     *  `mv candidate_embeddings_p1.pt model_data/candidates_data/`
     *  `mv candidate_embeddings_p2.pt model_data/candidates_data/`
-4) Install requirements `pip install -r requirements.txt`
-5) Test on a sample input. 50 - number of videos, 3 number of channels, 16 - number of frames, 224 - height and width 
+3) Install requirements `pip install -r requirements.txt`
+4) Test on a sample input. 50 - number of videos, 3 number of channels, 16 - number of frames, 224 - height and width 
 ```
 from echo_prime import EchoPrime
 import torch
 ep = EchoPrime()
 ep.predict_metrics(ep.encode_study(torch.zeros((50, 3, 16, 224, 224))))
 ```
-6) Follow EchoPrimeDemo.ipynb notebook to see how to correctly process the input and inference Echoprime.
+5) Follow EchoPrimeDemo.ipynb notebook to see how to correctly process the input and inference Echoprime.
 
 ## Licence
 This project is licensed under the terms of the MIT license.
