@@ -4,6 +4,7 @@ import math
 import glob
 import json
 import pickle
+import random
 
 # Third-party library imports
 import torch
@@ -17,6 +18,7 @@ import cv2
 import pydicom
 import sklearn
 import sklearn.metrics
+import transformers
 
 
 # Local module imports
@@ -34,13 +36,13 @@ class EchoPrime:
         for param in echo_encoder.parameters():
             param.requires_grad = False
             
-        vc_checkpoint = torch.load("model_data/weights/view_classifier.ckpt")
-        vc_state_dict={key[6:]:value for key,value in vc_checkpoint['state_dict'].items()}
+        vc_state_dict = torch.load("model_data/weights/view_classifier.pt")
         view_classifier = torchvision.models.convnext_base()
         view_classifier.classifier[-1] = torch.nn.Linear(
             view_classifier.classifier[-1].in_features, 11
         )
         view_classifier.load_state_dict(vc_state_dict)
+
         view_classifier.to(device)
         view_classifier.eval()
         for param in view_classifier.parameters():
@@ -262,7 +264,7 @@ class EchoPrime:
             return view_list
             
         return stack_of_view_encodings
-    
+    @torch.no_grad()
     def encode_study(self,stack_of_videos,visualize=False):
         """
         Produces an EchoPrime embedding of the echocardiography study
@@ -348,3 +350,56 @@ class EchoPrime:
                                         if self.candidate_studies[c_ids] in self.candidate_labels[pheno]])
         
         return preds
+
+class EchoPrimeTextEncoder(torch.nn.Module):
+    def __init__(self,device="cuda"):
+        super().__init__()
+        self.device=device
+        config = transformers.AutoConfig.from_pretrained("microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract")
+        self.backbone = transformers.AutoModelForMaskedLM.from_config(config)
+        self.text_projection = torch.nn.Linear(768, 512)
+        self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+            "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract"
+        )
+        self.tokenizer.max_length=512
+        self.to(device)
+    def forward(self,report):
+        text = self.tokenizer(
+        report,
+        padding="max_length",  # Pad to max_length
+        max_length=512,        # Set the maximum length to 512 tokens
+        truncation=True,        # Truncate if the input is longer than max_length,
+        return_tensors="pt"
+        )
+        if text["input_ids"].shape[1] > 512:
+            # find sep token positions
+            sep_positions = list(
+                torch.where(text["input_ids"].squeeze(0) == 3)[0].numpy()
+            )
+
+            # get maximum possible start that's not going to run out of tokens
+            max_start = sep_positions[-1] - 512
+            possible_starts = [pos for pos in sep_positions if pos < max_start]
+            # add 0 as a possible start
+            possible_starts.insert(0, 0)
+
+            start = possible_starts[random.randint(0, len(possible_starts) - 1)]
+
+            max_end = start + 512
+            # find the first number less than max_end in sep_position
+            for p in reversed(sep_positions):
+                if p <= max_end:
+                    end = p
+                    break
+            # finally cut the tokens
+            text = transformers.BatchEncoding(
+                data={k: v[:, start:end] for (k, v) in text.items()}
+            )
+        with torch.no_grad():
+            text.to(self.device)
+            text_emb = self.text_projection(
+                self.backbone(**text, output_hidden_states=True).hidden_states[-1][
+                    :, 0, :
+                ]
+            )
+        return text_emb

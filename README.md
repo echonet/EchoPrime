@@ -33,12 +33,13 @@ This project is licensed under the terms of the MIT license.
 
 
 ## FAQ:
+### How to load pretrained video encoder and text encoder for fune-tuning?
+`load_for_finetuning.py` script shows how to load pretrained EchoPrime video and text encoder.
 
 ### After processing the images they appear green-tinted.
 Make sure that you have the correct libraries installed. Use requirements.txt to install the dependencies.
 
-
-## How to run the code in docker?
+### How to run the code in docker?
 
 ```
 docker build -t echo-prime .
