@@ -31,6 +31,12 @@ ep.predict_metrics(ep.encode_study(torch.zeros((50, 3, 16, 224, 224))))
 ## Licence
 This project is licensed under the terms of the MIT license.
 
+## Demo Video: Similarity Search UI
+This short video showcases the **EchoPrime similarity search user interface**, a companion tool that enables interactive retrieval of echocardiogram studies based on cosine similarity.  
+It demonstrates how users can query specific phrases (e.g., *aortic root dilation*, *mitral calcification*) or upload new studies, and view the most similar cases across multiple views in real time.
+
+[Watch on YouTube!](https://youtu.be/mot9R7-HQPk)
+
 
 ## FAQ:
 ### How to load pretrained video encoder and text encoder for fune-tuning?
