@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import numpy as np
@@ -8,9 +9,6 @@ import numpy as np
 import cv2
 import pydicom as dicom
 import torch
-
-with open("assets/per_section.json", encoding="utf-8") as f:
-    json_data = json.load(f)
 
 _ybr_to_rgb_lut = None
 
@@ -53,7 +51,7 @@ regex_per_section = None
 numerical_pattern = r'(\\d+(\\.\\d+)?)'  # Escaped backslashes for integers or floats
 string_pattern = r'\\b\\w+.*?(?=\\.)'
 
-def initialize_language(lang='en'):
+def initialize_language(lang='en', assets_root_dir: str = None):
     """
     Initialize language-specific variables.
     
@@ -62,13 +60,14 @@ def initialize_language(lang='en'):
     """
     all_phrases, t_list = None, None
     global phrases_per_section_list, phrases_per_section_list_org, regex_per_section
-    
+    assets_dir = os.path.join(assets_root_dir, "assets") if assets_root_dir is not None else "assets"
+
     if lang == 'en':
-        phrases_file = "assets/all_phr.json"
+        phrases_file = os.path.join(assets_dir, "all_phr.json")
     elif lang == 'it':
-        phrases_file = "assets/all_phr_it.json"
+        phrases_file = os.path.join(assets_dir, "all_phr_it.json")
     elif lang == 'bs':
-        phrases_file = "assets/all_phr_bs.json"
+        phrases_file = os.path.join(assets_dir, "all_phr_bs.json")
     # add your translated file here
     #elif lang == 'your_language_code':
     #    phrases_file = "assets/all_phr_{your_language_code}.json"
@@ -106,11 +105,15 @@ def extract_section(report, section_header):
     else:
         return "Section not found."
 
-def extract_features(report: str) -> list:
+def extract_features(report: str, assets_root_dir: str = None) -> list:
     """
     Returns a list of 21 different features
     see json_data for a list of features
     """
+    assets_dir = os.path.join(assets_root_dir, "assets") if assets_root_dir is not None else "assets"
+    with open(os.path.join(assets_dir, "per_section.json"), encoding="utf-8") as f:
+        json_data = json.load(f)
+
     sorted_features=['impella',
     'ejection_fraction',
     'pacemaker',
