@@ -29,7 +29,7 @@ ep.predict_metrics(ep.encode_study(torch.zeros((50, 3, 16, 224, 224))))
 5) Follow EchoPrimeDemo.ipynb notebook to see how to correctly process the input and inference Echoprime.
 
 ## Licence
-This project is licensed under the terms of the MIT license.
+This project is licensed under the terms of the license listed in the repo.
 
 
 ## FAQ:
