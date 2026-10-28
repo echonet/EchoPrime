@@ -16,8 +16,6 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import cv2
 import pydicom
-import sklearn
-import sklearn.metrics
 import transformers
 
 
@@ -25,7 +23,7 @@ import transformers
 import utils
 
 class EchoPrime:
-    def __init__(self, device=None, lang='en'):
+    def __init__(self, device=None, lang='en', weights_root_dir=None, assets_root_dir=None):
         """
         Initialize EchoPrime
         
@@ -35,10 +33,12 @@ class EchoPrime:
         """
 
         # load language specific files
-        utils.initialize_language(lang)
+        utils.initialize_language(lang, assets_root_dir=assets_root_dir)
+        weights_root_dir = os.path.join(weights_root_dir, "model_data") if weights_root_dir is not None else "model_data"
+        assets_root_dir = os.path.join(assets_root_dir, "assets") if assets_root_dir is not None else "assets"
         
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        checkpoint = torch.load("model_data/weights/echo_prime_encoder.pt",map_location=device)
+        checkpoint = torch.load(os.path.join(weights_root_dir, "weights", "echo_prime_encoder.pt"), map_location=device)
         echo_encoder = torchvision.models.video.mvit_v2_s()
         echo_encoder.head[-1] = torch.nn.Linear(echo_encoder.head[-1].in_features, 512)
         echo_encoder.load_state_dict(checkpoint)
@@ -47,7 +47,7 @@ class EchoPrime:
         for param in echo_encoder.parameters():
             param.requires_grad = False
             
-        vc_state_dict = torch.load("model_data/weights/view_classifier.pt")
+        vc_state_dict = torch.load(os.path.join(weights_root_dir, "weights", "view_classifier.pt"))
         view_classifier = torchvision.models.convnext_base()
         view_classifier.classifier[-1] = torch.nn.Linear(
             view_classifier.classifier[-1].in_features, 11
@@ -70,19 +70,19 @@ class EchoPrime:
         self.lang = lang
 
         # load MIL weights per section
-        self.MIL_weights = pd.read_csv("assets/MIL_weights.csv")
+        self.MIL_weights = pd.read_csv(os.path.join(assets_root_dir, "MIL_weights.csv"))
         self.non_empty_sections=self.MIL_weights['Section']
         self.section_weights=self.MIL_weights.iloc[:,1:].to_numpy()
     
         # Load candidate reports
-        self.candidate_studies=list(pd.read_csv("model_data/candidates_data/candidate_studies.csv")['Study'])
-        candidate_embeddings_p1=torch.load("model_data/candidates_data/candidate_embeddings_p1.pt")
-        candidate_embeddings_p2=torch.load("model_data/candidates_data/candidate_embeddings_p2.pt")
+        self.candidate_studies=list(pd.read_csv(os.path.join(weights_root_dir, "candidates_data", "candidate_studies.csv"))['Study'])
+        candidate_embeddings_p1=torch.load(os.path.join(weights_root_dir, "candidates_data", "candidate_embeddings_p1.pt"))
+        candidate_embeddings_p2=torch.load(os.path.join(weights_root_dir, "candidates_data", "candidate_embeddings_p2.pt"))
         self.candidate_embeddings=torch.cat((candidate_embeddings_p1,candidate_embeddings_p2),dim=0)
-        candidate_reports=pd.read_pickle("model_data/candidates_data/candidate_reports.pkl")
+        candidate_reports=pd.read_pickle(os.path.join(weights_root_dir, "candidates_data", "candidate_reports.pkl"))
         self.candidate_reports = [utils.phrase_decode(vec_phr) for vec_phr in tqdm(candidate_reports)]
-        self.candidate_labels = pd.read_pickle("model_data/candidates_data/candidate_labels.pkl")
-        self.section_to_phenotypes = pd.read_pickle("assets/section_to_phenotypes.pkl")
+        self.candidate_labels = pd.read_pickle(os.path.join(weights_root_dir, "candidates_data", "candidate_labels.pkl"))
+        self.section_to_phenotypes = pd.read_pickle(os.path.join(assets_root_dir, "section_to_phenotypes.pkl"))
 
     def process_dicoms(self,INPUT):
         """
